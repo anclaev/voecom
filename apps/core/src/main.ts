@@ -15,7 +15,7 @@ const bootstrap = async () => {
   const httpAdapter = app.getHttpAdapter();
   const instance = httpAdapter.getInstance();
   const config = app.get(ConfigService);
-  console.log('est');
+
   const allowedOrigins = config.getValue<string>('ALLOWED_ORIGINS');
   const cookieSecret = config.getValue<string>('COOKIE_SECRET');
 
