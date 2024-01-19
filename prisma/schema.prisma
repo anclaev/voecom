@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rank {
+  Private
+  Corporal
+  LanceSergeant
+  Sergeant
+  StaffSergeant
+  SergeantMajor
+  WarrantOfficer
+  SeniorWarrantOfficer
+  Lieutenant
+  SeniorLieutenant
+  Captain
+  Major
+  LieutenantColonel
+  Colonel
+}
+
+enum Role {
+  User
+  Supervisor
+  Administrator
+}
+
+model Employee {
+  id String @id @default(uuid())
+
+  name    String?
+  surname String?
+
+  salary       Int?
+  personal_key String?
+
+  created_at DateTime @default(now())
+
+  rank Rank @default(value: Private)
+
+  login    String @unique
+  password String
+  role     Role   @default(value: User)
+
+  positions Position[]
+  sessions  Session[]
+
+  duty_members DutyMember[]
+  theme_owner  Theme[]
+}
+
+model Session {
+  id String @id @default(uuid())
+
+  employee    Employee @relation(fields: [employee_id], references: [id])
+  employee_id String
+
+  created_at DateTime @default(now())
+  expiration DateTime
+
+  fingerprint String
+  refresh     String
+
+  browser String?
+  device  String?
+  os      String?
+}
+
+model Department {
+  id         String @id @default(uuid())
+  name       String
+  short_name String
+
+  positions Position[]
+  posts     Post[]
+}
+
+model Position {
+  id    String @id @default(uuid())
+  name  String
+  alias String
+
+  department    Department @relation(fields: [department_id], references: [id])
+  department_id String
+
+  post    Post   @relation(fields: [post_id], references: [id])
+  post_id String
+
+  duty_members DutyMember[]
+
+  employees Employee[]
+}
+
+model Post {
+  id   String @id @default(uuid())
+  name String @unique
+
+  department    Department @relation(fields: [department_id], references: [id])
+  department_id String
+
+  positions Position[]
+}
+
+model DutyMember {
+  id     String @id @default(uuid())
+  rating Int    @default(5)
+
+  employee    Employee @relation(fields: [employee_id], references: [id])
+  employee_id String
+
+  position    Position @relation(fields: [position_id], references: [id])
+  position_id String
+
+  duty    Duty?   @relation(fields: [duty_id], references: [id])
+  duty_id String?
+
+  reviews       Review[]
+  reviews_owner ReviewOwner[]
+
+  trainings       Training[]
+  trainings_owner TrainingOwner[]
+}
+
+model Review {
+  id     String @id @default(uuid())
+  text   String
+  rating Int    @default(5)
+
+  member    DutyMember @relation(fields: [member_id], references: [id])
+  member_id String
+
+  owner ReviewOwner?
+}
+
+model ReviewOwner {
+  id String @id @default(uuid())
+
+  owner    DutyMember @relation(fields: [owner_id], references: [id])
+  owner_id String
+
+  review   Review @relation(fields: [reviewId], references: [id])
+  reviewId String @unique
+}
+
+model Theme {
+  id   String @id @default(uuid())
+  name String
+
+  owner    Employee @relation(fields: [owner_id], references: [id])
+  owner_id String
+
+  trainings Training[]
+}
+
+model Training {
+  id     String @id @default(uuid())
+  rating Int    @default(5)
+
+  theme    Theme  @relation(fields: [theme_id], references: [id])
+  theme_id String
+
+  owner    TrainingOwner @relation(fields: [owner_id], references: [id])
+  owner_id String
+
+  duty    Duty   @relation(fields: [duty_id], references: [id])
+  duty_id String
+
+  members DutyMember[]
+}
+
+model TrainingOwner {
+  id String @id @default(uuid())
+
+  owner    DutyMember @relation(fields: [owner_id], references: [id])
+  owner_id String
+
+  trainings Training[]
+}
+
+model Duty {
+  id String @id @default(uuid())
+
+  start DateTime
+  end   DateTime
+  date  DateTime
+
+  rating Int @default(5)
+
+  members   DutyMember[]
+  trainings Training[]
+}
