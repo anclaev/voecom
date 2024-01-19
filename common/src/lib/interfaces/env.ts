@@ -9,4 +9,5 @@ export interface ENV {
   SESSION_EXPIRATION: number;
   JWT_EXPIRATION: number;
   JWT_REFRESH_EXPIRATION: number;
+  RABBITMQ_URL: string;
 }
