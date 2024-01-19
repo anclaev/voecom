@@ -47,8 +47,8 @@ jobs:
           key: ${{ steps.cache-dependencies-restore.outputs.cache-primary-key }}
 
       - uses: nrwl/nx-set-shas@v3
-      - run: yarn nx affected -t build --base=remote/origin/main --head=HEAD --with-deps
-      - run: yarn nx affected -t docker --base=remove/origin/main --head=HEAD --with-deps
+      - run: yarn nx affected -t build --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }} 
+      - run: yarn nx affected -t docker --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }} 
 
   deploy:
     name: Deploy apps
