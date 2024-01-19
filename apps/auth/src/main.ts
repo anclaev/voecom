@@ -1,31 +1,26 @@
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { ConfigService, LoggerFactory } from '@voecom/common';
+import { LoggerFactory, QUEUES } from '@voecom/common';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
 
-import { AppModule } from './app/app.module';
+import { AuthModule } from './app/auth.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: LoggerFactory('Voencom Auth'),
-  });
-
-  const config = app.get(ConfigService);
-
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.RMQ,
-    options: {
-      urls: [config.getValue<string>('RABBITMQ_URL')],
-      queue: 'AUTH_QUEUE',
-      queueOptions: {
-        durable: false,
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AuthModule,
+    {
+      logger: LoggerFactory('Voencom Auth'),
+      transport: Transport.RMQ,
+      options: {
+        urls: [process.env.RABBITMQ_URL!],
+        queue: QUEUES.AUTH,
+        queueOptions: {
+          durable: false,
+        },
       },
-    },
-  });
+    }
+  );
 
-  await app
-    .startAllMicroservices()
-    .then(() => Logger.log('Microservice successfully started!'));
+  await app.listen();
 }
 
 bootstrap();
