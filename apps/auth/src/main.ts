@@ -11,7 +11,7 @@ async function bootstrap() {
   });
 
   const config = app.get(ConfigService);
-
+  console.log('est');
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
