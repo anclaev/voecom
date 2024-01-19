@@ -75,7 +75,8 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_TOKEN }}
 
-            docker pull anclaev/voecom:latest
+            docker pull anclaev/voecom-core:latest
+            docker pull anclaev/voecom-auth:latest
 
             cd /home/${{ secrets.SSH_USERNAME }}/projects/voecom
 
