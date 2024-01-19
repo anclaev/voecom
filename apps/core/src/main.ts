@@ -1,7 +1,12 @@
-import { ConfigService, LoggerFactory } from '@voecom/common';
+import {
+  ConfigService,
+  LoggerFactory,
+  // RpcExceptionFilter,
+} from '@voecom/common';
+
 import { Logger, ValidationPipe } from '@nestjs/common';
 import fingerprint from 'express-fingerprint';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
 import { SerializerInterceptor } from './app/core/interceptors/serializer.interceptor';
@@ -12,7 +17,8 @@ const bootstrap = async () => {
   const app = await NestFactory.create(AppModule, {
     logger: LoggerFactory('Voecom Core'),
   });
-  const httpAdapter = app.getHttpAdapter();
+  const { httpAdapter } = app.get(HttpAdapterHost);
+
   const instance = httpAdapter.getInstance();
   const config = app.get(ConfigService);
 
@@ -24,6 +30,7 @@ const bootstrap = async () => {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      whitelist: true,
     })
   );
 
@@ -34,13 +41,15 @@ const bootstrap = async () => {
 
   app.useGlobalInterceptors(new SerializerInterceptor());
 
+  // app.useGlobalFilters(new RpcExceptionFilter());
+
   app.use(cookieParser(cookieSecret));
 
   instance.use(fingerprint());
 
-  await app.listen(port).finally(() => {
-    Logger.log('Gateway successfully started!');
-  });
+  await app
+    .listen(port)
+    .finally(() => Logger.log(`Started on ${port} port...`, 'NestApplication'));
 };
 
 bootstrap();

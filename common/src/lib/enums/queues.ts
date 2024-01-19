@@ -1,3 +1,3 @@
 export enum QUEUES {
-  AUTH_QUEUE = 'AUTH_QUEUE',
+  AUTH = 'auth',
 }

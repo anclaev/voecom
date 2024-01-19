@@ -6,7 +6,7 @@ export class SerializerInterceptor implements NestInterceptor {
   intercept(_: unknown, next: CallHandler<unknown>): Observable<unknown> {
     return next.handle().pipe(
       map((value) => {
-        if (value !== null && value['password']) value['password'] = undefined;
+        // if (value !== null && value['password']) value['password'] = undefined;
         return value;
       })
     );

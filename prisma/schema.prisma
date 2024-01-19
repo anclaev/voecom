@@ -30,11 +30,12 @@ enum Role {
   Administrator
 }
 
-model Employee {
+model User {
   id String @id @default(uuid())
 
   name    String?
   surname String?
+  email   String?
 
   salary       Int?
   personal_key String?
@@ -57,8 +58,8 @@ model Employee {
 model Session {
   id String @id @default(uuid())
 
-  employee    Employee @relation(fields: [employee_id], references: [id])
-  employee_id String
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
 
   created_at DateTime @default(now())
   expiration DateTime
@@ -93,7 +94,7 @@ model Position {
 
   duty_members DutyMember[]
 
-  employees Employee[]
+  users User[]
 }
 
 model Post {
@@ -110,8 +111,8 @@ model DutyMember {
   id     String @id @default(uuid())
   rating Int    @default(5)
 
-  employee    Employee @relation(fields: [employee_id], references: [id])
-  employee_id String
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
 
   position    Position @relation(fields: [position_id], references: [id])
   position_id String
@@ -151,7 +152,7 @@ model Theme {
   id   String @id @default(uuid())
   name String
 
-  owner    Employee @relation(fields: [owner_id], references: [id])
+  owner    User   @relation(fields: [owner_id], references: [id])
   owner_id String
 
   trainings Training[]

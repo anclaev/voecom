@@ -12,7 +12,7 @@ services:
       - .env
     environment:
       - VIRTUAL_HOST=api.voecom.ru
-      - VIRTUAL_PORT=3003
+      - VIRTUAL_PORT=3007
       - LETSENCRYPT_HOST=api.voecom.ru
     networks:
       - nginx-proxy-net
@@ -32,24 +32,31 @@ services:
 
   db:
     container_name: voecom-db
-    image: postgres:14-alpine
+    image: postgres:latest
+    depends_on:
+      - rabbitmq
     env_file:
       - .env
     environment:
-      - POSTGRES_USERNAME=${POSTGRES_USER
+      - POSTGRES_USERNAME=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_INITDB_ARGS="--auth-host=scram-sha-256"
     volumes:
       - data:/var/lib/postgresql/data
     restart: always
     networks:
       - net
+    ports:
+      - 8083:8080
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: voecom-rabbitmq
     env_file:
       - .env
+    volumes:
+      - rmq:/var/lib/rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
@@ -65,3 +72,4 @@ networks:
 
 volumes:
   data: {}
+  rmq: {}

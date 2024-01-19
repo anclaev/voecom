@@ -1,3 +1,2 @@
-import { QUEUES } from './queues';
-
-export { QUEUES };
+export * from './queues';
+export * from './messages';
