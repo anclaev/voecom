@@ -4,13 +4,13 @@ ARG node_version=18.16.0
 FROM node:${node_version} AS deps
 
 LABEL maintainer="anclaev<iahugo@yandex.ru>"
-LABEL description="Voecom Core"
+LABEL description="Voecom Auth"
 
-WORKDIR /core
+WORKDIR /auth
 
-COPY dist/apps/core/package.json ./package.json
+COPY dist/apps/auth/package.json ./package.json
 COPY prisma ./prisma
-COPY apps/core/entrypoint.sh ./entrypoint.sh
+COPY apps/auth/entrypoint.sh ./entrypoint.sh
 
 RUN yarn install
 RUN yarn add -D prisma
@@ -20,16 +20,16 @@ RUN yarn prisma generate
 FROM node:${node_version} AS runtime
 
 ENV NODE_ENV production
-ENV API_PORT 3001
+ENV API_PORT 3002
 
-WORKDIR /home/user/voecom/core
+WORKDIR /home/user/voecom/auth
 
-COPY --from=deps /core/node_modules ./node_modules
-COPY --from=deps /core/package.json ./package.json
-COPY --from=deps /core/prisma ./prisma
-COPY --from=deps /core/entrypoint.sh ./entrypoint.sh
+COPY --from=deps /auth/node_modules ./node_modules
+COPY --from=deps /auth/package.json ./package.json
+COPY --from=deps /auth/prisma ./prisma
+COPY --from=deps /auth/entrypoint.sh ./entrypoint.sh
 
-COPY dist/apps/core/* .
+COPY dist/apps/auth/* .
 
 RUN chown -R node:node .
 RUN chmod +x ./entrypoint.sh
