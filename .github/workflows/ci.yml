@@ -48,7 +48,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
       - run: yarn nx affected -t build
-      - run: yarn nx affected -t docker -- --base=remotes/origin/main
+      - run: yarn nx affected -t docker --base=origin/main --head=HEAD --with-deps
 
   deploy:
     name: Deploy apps
